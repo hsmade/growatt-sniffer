@@ -30,9 +30,9 @@ func TestDecode(t *testing.T) {
 			wantErr: false,
 			want: Data{
 				DataLoggerSerial: dataLoggerSerial,
-				PVSerial:         pvSerial,
-				PVPowerin:        295,
-				P1Voltage:        180.7,
+				Serial:           pvSerial,
+				PowerIn:          295,
+				PV1Voltage:       180.7,
 				PV1Current:       0.8,
 				PV1Watt:          154.5,
 			},
