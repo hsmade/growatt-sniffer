@@ -27,6 +27,17 @@ func main() {
 		programLevel.Set(slog.LevelDebug)
 	}
 
+	// -------
+	//raw, err := os.ReadFile("data-1699135081.012552.out")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//data := decode.Data{}
+	//_ = decode.UnmarshalBinary(decrypt.Decrypt(raw), &data)
+	//fmt.Printf("%+v\n", data)
+	// -------
+
 	// setup listener for tzsp stream
 	addr := net.UDPAddr{
 		Port: *port,
