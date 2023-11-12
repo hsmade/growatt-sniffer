@@ -9,12 +9,6 @@ import (
 
 func TestDecode(t *testing.T) {
 	happy, _ := os.ReadFile("testfiles/happy.data")
-	dataLoggerSerialString := []byte("XGD5BF42MX")
-	dataLoggerSerial := [10]byte{}
-	copy(dataLoggerSerial[:], dataLoggerSerialString)
-	pvSerialString := []byte("WRG0BH70JU")
-	pvSerial := [10]byte{}
-	copy(pvSerial[:], pvSerialString)
 	type args struct {
 		data []byte
 	}
@@ -29,8 +23,8 @@ func TestDecode(t *testing.T) {
 			args:    args{data: decrypt.Decrypt(happy)},
 			wantErr: false,
 			want: Data{
-				DataLoggerSerial: dataLoggerSerial,
-				Serial:           pvSerial,
+				DataLoggerSerial: "XGD5BF42MX",
+				Serial:           "WRG0BH70JU",
 				PowerIn:          295,
 				PV1Voltage:       180.7,
 				PV1Current:       0.8,
