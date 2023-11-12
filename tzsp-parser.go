@@ -44,13 +44,6 @@ func main() {
 				continue
 			}
 
-			//// store a copy of the packet as a file
-			//file, err := os.Create(fmt.Sprintf("data-%d.dump", time.Now().UnixNano()))
-			//if err == nil {
-			//	_, _ = file.Write(packet)
-			//}
-			//_ = file.Close()
-
 			if len(packet) < 100 {
 				slog.Debug("received packet too small", "size", len(packet))
 				continue

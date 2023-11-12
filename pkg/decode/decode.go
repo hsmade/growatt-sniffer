@@ -100,8 +100,12 @@ func Decode(data []byte) (Data, error) {
 
 func UnmarshalBinary(data []byte, s *Data) error {
 	// T06NNNNX
+	// data[0:2] = some sort of index (increases with every new full data)
+	// data[2:8] = 0 6 2 65 1 4 (int8) / 6 577 260 (int16)
 	s.DataLoggerSerial = string(data[8:18])
+	// data[18:38] = 0
 	s.Serial = string(data[38:48])
+	// data[48:68] = 0
 	year := binary.BigEndian.Uint16([]byte{0x00, data[68:69][0]}) + 2000
 	month := binary.BigEndian.Uint16([]byte{0x00, data[69:70][0]})
 	day := binary.BigEndian.Uint16([]byte{0x00, data[70:71][0]})
@@ -109,6 +113,7 @@ func UnmarshalBinary(data []byte, s *Data) error {
 	minute := binary.BigEndian.Uint16([]byte{0x00, data[72:73][0]})
 	second := binary.BigEndian.Uint16([]byte{0x00, data[73:74][0]})
 	s.Date = time.Date(int(year), time.Month(month), int(day), int(hour), int(minute), int(second), 0, time.Local)
+	// data[74] = 2
 	_ = float64(binary.BigEndian.Uint16(data[75:77])) // record type 1? (3000)
 	_ = float64(binary.BigEndian.Uint16(data[77:79])) // record type 2? (3124)
 	s.Status = Status(binary.BigEndian.Uint16(data[79:81]))
@@ -119,6 +124,7 @@ func UnmarshalBinary(data []byte, s *Data) error {
 	s.PV2Voltage = float64(binary.BigEndian.Uint16(data[93:95])) / 10
 	s.PV2Current = float64(binary.BigEndian.Uint16(data[95:97])) / 10
 	s.PV2Power = float64(binary.BigEndian.Uint32(data[97:101])) / 10
+	// data[101:125] = 0
 	s.TotalPowerOut = float64(int(data[128])+int(data[127])*256+int(data[126])*256*256+int(data[125])*256*256*256) / 10
 	s.Frequency = float64(binary.BigEndian.Uint16(data[129:131])) / 100
 	s.GridFase1Voltage = float64(binary.BigEndian.Uint16(data[131:133])) / 10
@@ -138,11 +144,36 @@ func UnmarshalBinary(data []byte, s *Data) error {
 	s.PV1EnergyTotal = float64(binary.BigEndian.Uint32(data[193:197])) / 10
 	s.PV2EnergyToday = float64(binary.BigEndian.Uint32(data[197:201])) / 10
 	s.PV2EnergyTotal = float64(binary.BigEndian.Uint32(data[201:205])) / 10
+	// data[205:253] = 0
+	// data[253:255] = 255 250 (uint8) / 65530 (uint16) / -6 (int16)
+	// data[255:265] = 0
 	s.InverterTemperature = float64(binary.BigEndian.Uint16(data[265:267])) / 10
+	// data[267:269] = 277-284 (uint8)
+	// data[269:273] = 0
 	s.IntelligentPowerManagementTemperature = float64(binary.BigEndian.Uint16(data[273:275])) / 10
-	_ = float64(binary.BigEndian.Uint16(data[275:277])) / 10          // pbusvolt, inverter bus? (361.1)
-	_ = float64(binary.BigEndian.Uint16(data[277:279])) / 10          // nbusvolt, battery bus? (0)
-	_ = float64(binary.BigEndian.Uint16([]byte{0x00, data[277]})) / 1 // battery1soc (0)
+	_ = float64(binary.BigEndian.Uint16(data[275:277])) / 10 // pbusvolt, inverter bus? (361.1)
+	_ = float64(binary.BigEndian.Uint16(data[277:279])) / 10 // nbusvolt, battery bus? (0)
+	// data[279:283] = 78 32 0 13 (uint8) / 20000 13 ((u)int16)
+	// data[283:310] = 0
+	// data[310] = 60
+	// data[311:329] = 0
+	// data[329:333] = 12 53 12 177 (uint8) / 3125 3249 ((u)int16)
+	// data[333:405] = 0
+	// data[405:407] = 39 16 (uint8) / 10000 ((u)int16)
+	// data[407:409] = 0
+	// data[409:411] = 14 49-85 (uint8) / 3633-3669 ((u)int16)
+	// data[411:426] = 0
+	_ = float64(binary.BigEndian.Uint16([]byte{0x00, data[426]})) / 1 // battery1soc (0)
+	// data[427:551] = 0
+	// data[551:555] = 0 1 0 1 (uint8) / 1 1 ((u)int16)
+	// data[555:565] = 0
+	// data[565:585] = 7 110 7  37 14 72 53 32 38 120 0 9 0 6 0 2 0 0  73  78
+	// data[565:585] = 7  97 6 176 14 49 53 32 38  99 0 9 0 6 0 2 0 0 129  69
+	// data[565:585] = 7  27 7  92 14 56 53 32 38 107 0 9 0 6 0 2 0 0  71  30
+	// data[565:585] = 7  62 7  61 14 60 53 32 38 115 0 9 0 6 0 2 0 0  57   1
+	// data[565:585] = 7  84 7  51 14 69 53 32 38 114 0 9 0 6 0 2 0 0  18  64
+	// data[565:585] = 7  59 7  61 14 85 53 32 38 124 0 9 0 6 0 2 0 0 152  64
+	// data[565:585] = 7  56 7  51 14 84 53 32 38 118 0 9 0 6 0 2 0 0 201 119
 	defer func() {
 		if r := recover(); r != nil {
 			slog.Error("recovered from panic", "r", r)
