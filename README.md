@@ -1,3 +1,12 @@
+# growatt sniffer
+This repository has 
+* tools to decrypt and decode growatt data sent to the growatt server by inverters
+* a tzsp listener which yields tcp payload data on a channel
+
+It also contains example scripts to use these.
+
+These libraries are used in [growatt-esphome](https://github.com/hsmade/growatt-esphome).
+
 ## Parsing tzsp streams of captured growatt data
 On mikrotik:
 ```
