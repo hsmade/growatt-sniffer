@@ -2,6 +2,7 @@ package decode
 
 import (
 	"encoding/binary"
+	"log/slog"
 	"time"
 )
 
@@ -25,8 +26,8 @@ const (
 
 type Data struct {
 	Date                                  time.Time
-	DataLoggerSerial                      [10]byte // string
-	Serial                                [10]byte // string
+	DataLoggerSerial                      string // string
+	Serial                                string // string
 	Status                                Status
 	PowerIn                               float64
 	TotalPowerOut                         float64
@@ -99,8 +100,8 @@ func Decode(data []byte) (Data, error) {
 
 func UnmarshalBinary(data []byte, s *Data) error {
 	// T06NNNNX
-	copy(s.DataLoggerSerial[:], data[8:18])
-	copy(s.Serial[:], data[38:48])
+	s.DataLoggerSerial = string(data[8:18])
+	s.Serial = string(data[38:48])
 	year := binary.BigEndian.Uint16([]byte{0x00, data[68:69][0]}) + 2000
 	month := binary.BigEndian.Uint16([]byte{0x00, data[69:70][0]})
 	day := binary.BigEndian.Uint16([]byte{0x00, data[70:71][0]})
@@ -142,5 +143,10 @@ func UnmarshalBinary(data []byte, s *Data) error {
 	_ = float64(binary.BigEndian.Uint16(data[275:277])) / 10          // pbusvolt, inverter bus? (361.1)
 	_ = float64(binary.BigEndian.Uint16(data[277:279])) / 10          // nbusvolt, battery bus? (0)
 	_ = float64(binary.BigEndian.Uint16([]byte{0x00, data[277]})) / 1 // battery1soc (0)
+	defer func() {
+		if r := recover(); r != nil {
+			slog.Error("recovered from panic", "r", r)
+		}
+	}()
 	return nil
 }

@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"github.com/hsmade/growatt-sniffer/pkg/decode"
 	"github.com/hsmade/growatt-sniffer/pkg/decrypt"
-	"github.com/rs/tzsp"
+	"github.com/hsmade/growatt-sniffer/pkg/tzsp"
 	"log"
 	"log/slog"
-	"net"
 	"os"
 )
 
@@ -27,43 +26,12 @@ func main() {
 		programLevel.Set(slog.LevelDebug)
 	}
 
-	// -------
-	//raw, err := os.ReadFile("data-1699135081.012552.out")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//data := decode.Data{}
-	//_ = decode.UnmarshalBinary(decrypt.Decrypt(raw), &data)
-	//fmt.Printf("%+v\n", data)
-	// -------
-
-	// setup listener for tzsp stream
-	addr := net.UDPAddr{
-		Port: *port,
-		IP:   net.ParseIP("0.0.0.0"),
-	}
-	conn, err := net.ListenUDP("udp", &addr)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// read tzsp stream and send the received packets to the channel
 	packets := make(chan []byte, 1)
 	go func() {
-		buf := make([]byte, 65535)
-		for {
-			bytes, _, err := conn.ReadFrom(buf)
-			if err != nil {
-				slog.Error("reading from tzsp stream", "error", err)
-				continue
-			}
-			packet, err := tzsp.Parse(buf[:bytes])
-			if err != nil {
-				slog.Error("parsing tzsp stream", "error", err)
-				continue
-			}
-			packets <- packet.Data
+		slog.Info("starting tzsp listener")
+		err := tzsp.Listen(*port, packets)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}()
 
@@ -72,8 +40,19 @@ func main() {
 		select {
 		case packet := <-packets:
 			slog.Debug("received packet", "size", len(packet))
-			if len(packet) < 93 {
-				slog.Warn("received packet too small", "size", len(packet))
+			if len(packet) == 0 {
+				continue
+			}
+
+			//// store a copy of the packet as a file
+			//file, err := os.Create(fmt.Sprintf("data-%d.dump", time.Now().UnixNano()))
+			//if err == nil {
+			//	_, _ = file.Write(packet)
+			//}
+			//_ = file.Close()
+
+			if len(packet) < 100 {
+				slog.Debug("received packet too small", "size", len(packet))
 				continue
 			}
 
