@@ -34,10 +34,10 @@ type Data struct {
 	Frequency                             float64 // in or out?
 	PV1Voltage                            float64
 	PV1Current                            float64
-	PV1Watt                               float64
+	PV1Power                              float64
 	PV2Voltage                            float64
 	PV2Current                            float64
-	PV2Watt                               float64
+	PV2Power                              float64
 	GridFase1Voltage                      float64
 	GridFase1Current                      float64
 	GridFase1Power                        float64
@@ -115,10 +115,10 @@ func UnmarshalBinary(data []byte, s *Data) error {
 	s.PowerIn = float64(binary.BigEndian.Uint32(data[81:85])) / 10
 	s.PV1Voltage = float64(binary.BigEndian.Uint16(data[85:87])) / 10
 	s.PV1Current = float64(binary.BigEndian.Uint16(data[87:89])) / 10
-	s.PV1Watt = float64(binary.BigEndian.Uint32(data[89:93])) / 10
+	s.PV1Power = float64(binary.BigEndian.Uint32(data[89:93])) / 10
 	s.PV2Voltage = float64(binary.BigEndian.Uint16(data[93:95])) / 10
 	s.PV2Current = float64(binary.BigEndian.Uint16(data[95:97])) / 10
-	s.PV2Watt = float64(binary.BigEndian.Uint32(data[97:101])) / 10
+	s.PV2Power = float64(binary.BigEndian.Uint32(data[97:101])) / 10
 	s.TotalPowerOut = float64(int(data[128])+int(data[127])*256+int(data[126])*256*256+int(data[125])*256*256*256) / 10
 	s.Frequency = float64(binary.BigEndian.Uint16(data[129:131])) / 100
 	s.GridFase1Voltage = float64(binary.BigEndian.Uint16(data[131:133])) / 10

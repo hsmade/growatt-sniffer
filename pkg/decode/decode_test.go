@@ -34,7 +34,7 @@ func TestDecode(t *testing.T) {
 				PowerIn:          295,
 				PV1Voltage:       180.7,
 				PV1Current:       0.8,
-				PV1Watt:          154.5,
+				PV1Power:         154.5,
 			},
 		},
 	}
