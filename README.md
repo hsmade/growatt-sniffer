@@ -7,6 +7,8 @@ It also contains example scripts to use these.
 
 These libraries are used in [growatt-esphome](https://github.com/hsmade/growatt-esphome).
 
+The examples assume you have 1.21 installed.
+
 ## Parsing tzsp streams of captured growatt data
 On mikrotik:
 ```
@@ -16,7 +18,7 @@ set file-limit=10000KiB filter-interface=WAN filter-ip-address=47.91.67.66/32 fi
 
 On destination server (192.168.88.2):
 ```
-go run tzsp-parser.go -verbose -port 9900
+go run tzsp-parser.go -verbose -address 9900
 ```
 
 ## parsing raw growatt data (just the tcp packet payload)
