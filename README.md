@@ -7,7 +7,7 @@ It also contains example scripts to use these.
 
 These libraries are used in [growatt-esphome](https://github.com/hsmade/growatt-esphome).
 
-The examples assume you have 1.21 installed.
+The examples assume you have [go](https://go.dev/doc/install) 1.21 or later installed.
 
 ## Parsing tzsp streams of captured growatt data
 On mikrotik:
