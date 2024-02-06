@@ -1,6 +1,6 @@
 module github.com/hsmade/growatt-sniffer
 
-go 1.21.4
+go 1.22.0
 
 require (
 	github.com/google/gopacket v1.1.19
